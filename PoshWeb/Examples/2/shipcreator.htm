@@ -1,0 +1,87 @@
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Ship Creator</title>
+   <link rel="stylesheet" href="bootstrap.min.css">
+   <link rel="stylesheet" type="text/css" href="shipcreator.css">
+   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+   <script src="handlebars.min-latest.js"></script>
+   <script src="jquery-3.3.1.min.js"></script>
+   <script src="bootstrap.min.js"></script>
+<script id="entry-template" type="text/x-handlebars-template">
+
+<div class="container">
+   <button type="button" class="btn btn-dark" onclick="getData('fn=ShowPaths');">Folders</button>
+   {{#if path}}
+      <button type="button" class="btn btn-dark" onclick="getData('fn=Showbuilds&path={{encode path}}');">{{path}}</button>
+   {{/if}}
+   <br><br>
+
+   {{#if BuildPath}}
+   <table class="table table-striped">
+    <tbody>
+   {{#each BuildPath}}
+      <tr>
+        <td>
+            <a href="#" onclick="getData('fn=Showbuilds&path={{encode path}}');"><i class="fas fa-folder"></i> {{path}}</a>
+        </td>
+      </tr>
+   {{/each}}
+   </tbody>
+   </table>
+   {{/if}}
+
+   {{#if Definitions}}
+   <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Build</th>
+        <th>Lastname</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+   {{#each Definitions}}
+      <tr>
+        <td>
+            <a target="_blank" rel="noopener noreferrer" href="{{_links.web.href}}">{{name}}</a>
+        </td>
+      </tr>
+   {{/each}}
+   </tbody>
+   </table>
+   {{/if}}
+</div>
+
+
+
+</script>
+
+<script>
+var glob = {}
+function getData(str){
+   glob.MainBody.innerHTML = glob.Loading;
+   $.getJSON("shipcreator?"+str, function( data ) {
+      glob.MainBody.innerHTML = glob.template(data);
+   });
+}
+
+
+function start(){
+   Handlebars.registerHelper('encode', function(str) {
+     return encodeURIComponent(str);
+   });
+
+   glob.template = Handlebars.compile(document.getElementById("entry-template").innerHTML);
+   glob.MainBody = document.getElementById("main-body");
+   glob.Loading = glob.MainBody.innerHTML
+   getData("fn=ShowPaths");
+}
+</script>
+
+   </head>
+ <body onload="start();">
+   <div id="main-body"><div class="container"><div class="loader"></div></div></div>
+ </body>
+</html>
